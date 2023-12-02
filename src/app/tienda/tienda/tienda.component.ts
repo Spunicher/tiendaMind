@@ -153,7 +153,7 @@ export class TiendaComponent implements OnInit {
 
   obtenerUrlLogoTorzoId(id: string) {
     this.logoServices.obtenerLogoId(id).subscribe((e) => {  
-      this.urllogosTorzoId = "https://main--eclectic-figolla-73158f.netlify.app/uploads/"+e.url;
+      this.urllogosTorzoId = "https://dealgoritmos.com/wp-content/uploads/2023/05/6d8841b6-9d24-457a-95c5-0d3de1d7bf5f.png";
       this.cargarImagenTorzo(this.urllogosTorzoId);
     });
   }
@@ -180,8 +180,8 @@ export class TiendaComponent implements OnInit {
     });
     let src = imagen;
     const loader1 = new THREE.TextureLoader();
-    console.log(src)
     let texture = loader1.load(src);
+    console.log(texture)
     const logoPechos = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
