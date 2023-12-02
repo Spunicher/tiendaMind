@@ -1,0 +1,15 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #F5F5DC;
+}
+
+main {
+    overflow-y: auto; /* Puedes usar 'scroll' en lugar de 'auto' si deseas que siempre se muestre el scrollbar */
+    max-height: 87vh; /* Limita la altura para que el scrollbar aparezca cuando el contenido sea más grande que la ventana */
+  }
+
+  footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }

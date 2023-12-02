@@ -1,0 +1,28 @@
+.table-container {
+  max-height: 300px;
+  /* Ajusta la altura máxima según tus necesidades */
+  overflow-y: auto;  
+  box-shadow: 3px 3px 5px 3px rgb(54, 54, 54);
+}
+
+tbody, thead, tr, td, th{
+  background-color: #e9e9b2 !important;
+  border: solid 1px black;
+}
+
+.card {
+  background-color: #dbdbc4;
+  box-shadow: 3px 3px 5px 3px rgb(54, 54, 54);
+}
+
+input, select {
+  background-color: #e9e9b2;
+}
+
+option {
+  background-color: #F5F5DC;
+}
+
+h2{
+  font-family: 'Vina Sans', sans-serif;
+}

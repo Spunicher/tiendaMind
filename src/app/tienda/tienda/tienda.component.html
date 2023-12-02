@@ -1,0 +1,177 @@
+<form [formGroup]="formGuardarProductos">
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-lg-5 mb-4" id="contendor-camisa">
+        <div class="row" id="camisa"></div>
+        <div class="row">
+          <div class="col" id="colores">
+            <button class="circular-button gray" (click)="switchColor('white')"  [attr.disabled]="idActivo ? null : true"></button>
+            <button class="circular-button yellow" (click)="switchColor('yellow')"  [attr.disabled]="idActivo ? null : true"></button>
+            <button class="circular-button green" (click)="switchColor('green')"  [attr.disabled]="idActivo ? null : true"></button>
+            <button class="circular-button blueviolet" (click)="switchColor('blueviolet')"  [attr.disabled]="idActivo ? null : true"></button>
+            <button class="circular-button red" (click)="switchColor('red')"  [attr.disabled]="idActivo ? null : true"></button>
+            <button class="circular-button black" (click)="switchColor('black')"  [attr.disabled]="idActivo ? null : true"></button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-7 mb-4" id="contenedor-datos">
+        <div class="card text-center">
+          <div class="card-header">
+            <h2 class="card-title" [attr.hidden]="idActivo ? null : true">Datos a Guardar</h2>
+            <h2 class="card-title" [hidden]="idActivo == true">Detalles del Producto</h2>
+          </div>
+          <div class="card-body">
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="floatingnombre" formControlName="nombre" [attr.disabled]="idActivo ? null : true" />
+                  <label for="floatingnombre">Nombre</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <select class="form-select" aria-label="Floating label select example" formControlName="categoria" id="floatingCategorias" [(ngModel)]="selectCategoria" name="opciones" [attr.disabled]="idActivo ? null : true">
+                    <option *ngFor="let opcion of lstMostrarCategorias" [value]="opcion._id">
+                      {{ opcion.nombre }}
+                    </option>
+                  </select>
+                  <label for="floatingCategorias">Seleccione una categoría</label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <div class="form-floating mb-3">
+                <select class="form-select input-width" aria-label="Default select example" formControlName="tela"
+                id="floatingTela"  [attr.disabled]="idActivo ? null : true">
+                  <option value="Algodon">Algodón</option>
+                  <option value="Nailon">Nailon</option>
+                  <option value="Poliester">Poliéster</option>
+                </select>
+                <label for="floatingTela">Seleccione un tipo de tela</label>
+              </div>
+              <div class="form-floating mb-3">              
+                <select class="form-select input-width" aria-label="Default select example" formControlName="talla"
+                id="floatingTalla"  [attr.disabled]="idActivo ? null : true">
+                  <option value="S">S</option>
+                  <option value="M">M</option>
+                  <option value="L">L</option>
+                  <option value="XL">XL</option>
+                </select>
+                <label for="floatingTalla">Seleccione una talla</label>
+              </div>
+            </div>            
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="floatingDescrip" formControlName="descripcion"   [attr.disabled]="idActivo ? null : true"/>
+              <label class="form-label" for="floatingDescrip">Descripcion</label>
+            </div>
+
+            <div class="input-group">
+              <div class="form-floating mb-3">
+                <input type="number" class="form-control input-width" id="floatingExistencias" formControlName="existencias"   [attr.disabled]="idActivo ? null : true"/>
+                <label for="floatingExistencias">Existencias</label>
+              </div>
+  
+              <div class="form-floating mb-3">
+                <input type="number" class="form-control input-width" id="floatingPrecio" formControlName="precio"   [attr.disabled]="idActivo ? null : true"/>
+                <label for="floatingPrecio">Precio</label>
+              </div>
+            </div>  
+            
+            
+            <div class="row">
+              <div class="col-md-4" >
+                <div class="custom-file d-flex justify-content-center align-items-center" style="margin-right: 1rem">
+                  <div id="carouselExample1" class="carousel slide" style="width: 200px; height: 200px">
+                    <label for="">Logos para torzo</label>
+                    <div class="carousel-inner">
+                      <div class="carousel-item" *ngFor="let elemento of lstLogoPecho; let i = index"
+                        [class.active]="i === 0">
+                        <img style="width: 200px; height: 180px" src="{{ elemento.url }}" class="d-block w-100" />
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample1"
+                          data-bs-slide="prev" style="background-color: black"
+                          (click)="obtenerUrlLogoTorzoId(elemento._id)"   [attr.disabled]="idActivo ? null : true">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample1"
+                          data-bs-slide="next" style="background-color: black"
+                          (click)="obtenerUrlLogoTorzoId(elemento._id)"   [attr.disabled]="idActivo ? null : true">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4"  >
+                <div class="custom-file d-flex justify-content-center align-items-center" style="margin-right: 1rem">
+                  <div id="carouselExample2" class="carousel slide" style="width: 200px; height: 200px">
+                    <label for="">Logos para espalda</label>
+                    <div class="carousel-inner">
+                      <div class="carousel-item" *ngFor="
+                          let elemento of lstLogosEspalda;
+                          let first = first
+                        " [class.active]="first">
+                        <img style="width: 200px; height: 180px" src="{{ elemento.url }}" class="d-block w-100" />
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample2"
+                          data-bs-slide="prev" style="background-color: black"
+                          (click)="obtenerUrlLogoEspaldId(elemento._id)"  [attr.disabled]="idActivo ? null : true">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample2"
+                          data-bs-slide="next" style="background-color: black"
+                          (click)="obtenerUrlLogoEspaldId(elemento._id)"  [attr.disabled]="idActivo ? null : true">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4" >
+                <div class="custom-file d-flex justify-content-center align-items-center" style="margin-right: 1rem">
+                  <div id="carouselExample3" class="carousel slide" style="width: 200px; height: 200px">
+                    <label for="">Logos para hombro</label>
+                    <div class="carousel-inner">
+                      <div class="carousel-item" *ngFor="let elemento of lstLogoBrazo; let first = first"
+                        [class.active]="first">
+                        <img style="width: 200px; height: 180px" src="{{ elemento.url }}" class="d-block w-100" />
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample3"
+                          data-bs-slide="prev" style="background-color: black"
+                          (click)="obtenerUrlLogoHombroId(elemento._id)"  [attr.disabled]="idActivo ? null : true">
+                          <span class="carousel-control-prev-icon" aria-hidden="true" ></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample3"
+                          data-bs-slide="next" style="background-color: black"
+                          (click)="obtenerUrlLogoHombroId(elemento._id)"  [attr.disabled]="idActivo ? null : true">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <br />
+          <div class="card-footer text-muted text-center">
+            <button class="btn btn-outline-success" (click)="guardarProducto()" [attr.disabled]="idActivo ? null : true"  [attr.hidden]="idActivo ? null : true">
+              <i class="bi bi-floppy-fill"></i>
+            </button>
+
+            <button class="btn btn-outline-danger" (click)="eliminarProducto()" [disabled]="idActivo == true" [hidden]="idActivo == true">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

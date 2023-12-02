@@ -1,0 +1,51 @@
+<div class="container mt-4">
+  <div class="col-lg-7 mx-auto" id="contenedor-datos">
+    <form [formGroup]="logoForm" (ngSubmit)="guardarLogos()">
+      <div class="card text-center">
+        <div class="card-header">
+          <h2 class="card-title">Datos a Guardar</h2>
+        </div>
+        <div class="card-body">
+          <div class="form-floating mb-3">
+            <label for="customFile">Seleccione un logo</label>
+            <br>
+            <input type="file" class="custom-file-input" id="customFile" accept=".jpg, .jpeg, .png" (change)="obtenerImagen($event)" formControlName="url">
+          </div>
+          <div class="form-floating mb-3">            
+            <select class="form-select" aria-label="Default select example" formControlName="tipo" id="tipoLogo">
+              <option value="Torzo">Torzo</option>
+              <option value="Hombro">Hombro</option>
+              <option value="Espalda">Espalda</option>
+            </select>
+            <label for="tipoLogo"><b>Seleccione la parte de la camisa</b></label>
+          </div>
+        </div>
+        <br>
+        <div class="card-footer text-muted text-center">
+          <button class="btn btn-outline-success" [disabled]="logoForm.invalid">
+            <i class="bi bi-floppy-fill"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <br>
+  <div class="table-container mb-4">
+    <table class="table table-bordered mx-auto">
+      <thead class="text-center">
+        <tr>
+          <th scope="col">Imagen</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Url</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let logo of logos" class="text-center">
+          <td><img style="width: 100px; height: 100px;" src="{{logo.url}}" /></td>
+          <td>{{logo.tipo}}</td>
+          <td>{{logo.url}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

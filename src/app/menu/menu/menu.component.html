@@ -1,0 +1,86 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="text-center">
+        <b
+          >Bienvenidos a tu Tienda <span class="mi">MI</span
+          ><span class="nd">ND</span></b
+        >
+      </h1>
+    </div>
+    <div class="col-lg-3">
+      <div class="form-floating mb-3">
+        <select
+          class="form-select mb-3 fondo"
+          aria-label="Default select example"
+          id="floatingCategorias"
+          [(ngModel)]="selectCategoria"
+          name="opciones"
+          (change)="cargarProductosByCategoria()"
+        >
+          <option
+            *ngFor="let opcion of lstMostrarCategorias"
+            [value]="opcion._id"
+          >
+            {{ opcion.nombre }}
+          </option>
+        </select>
+        <label style="font-weight: bolder !important" for="floatingCategorias"
+          >Selecciona una Categoria</label
+        >
+      </div>
+    </div>
+    <hr />
+  </div>
+  <div class="row">
+    <div
+      *ngFor="let producto of productos"
+      class="col-sm-3 d-flex justify-content-between text-center mb-4">
+      <div class="card fondo"   [attr.titulo]="producto.descripcion">
+        <div class="card-header">
+          <label class="form-label mt-2 lbl-stock"
+            >Existencias: {{ producto.existencias }}</label
+          >
+        </div>
+        <div
+          *ngIf="producto.categorias.nombre === 'TERMOS'"
+          class="text-center"
+        >
+          <img
+            src="{{ producto.imagen }}"
+            class="card-img-top img-termo"
+            alt="{{ producto.imagen }}"
+          />
+        </div>
+        <div *ngIf="producto.categorias.nombre != 'TERMOS'" class="text-center">
+          <img
+            src="{{ producto.imagen }}"
+            class="card-img-top"
+            alt="{{ producto.imagen }}"
+          />
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">
+            <b>{{ producto.nombre }}</b>
+          </h3>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <label class="form-label mt-2">$ {{ producto.precio }} USD</label>
+          <a
+            *ngIf="producto.categorias.nombre === 'CAMISAS 3D'"
+            (click)="mostrarUnProductoById(producto._id)"
+            class="btn btn-info"
+            ><i class="bi bi-search-heart"></i
+          ></a>
+          <a
+            href="#"
+            class="btn btn-primary"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top">
+            <i class="bi bi-cart-plus"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+body {
+    padding-top: 56px;    
+  }
+
+  p{
+    text-align: justify;
+  }
+
+  h2{
+    font-family: 'Vina Sans', sans-serif;
+  }
+  
+  .section {
+    background-color: #dbdbc4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 3px 3px 5px 3px rgb(54, 54, 54);
+    margin-bottom: 20px;
+  }
+  
+  .section-title {
+    color: #343a40;
+  }
+  
+  .section-content {
+    color: #6c757d;
+  }
+
+  .accordion-button{
+    background-color: #e9e9b2;
+  }
+
+  .accordion-body{
+    background-color: #F5F5DC;
+  }
