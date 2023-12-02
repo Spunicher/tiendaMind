@@ -54,9 +54,9 @@ export class TiendaComponent implements OnInit {
   lstLogosEspalda: any;
   lstLogoBrazo: any;
   lstLogoPecho: any;
-  urllogosTorzoId: any;
   urllogosBrazoId: any;
-  urllogosEspaldaId: any;
+  urllogosTorzoId: any;
+   urllogosEspaldaId: any;
 
   renderer = new THREE.WebGLRenderer();
   camera = new THREE.PerspectiveCamera(
@@ -123,18 +123,12 @@ export class TiendaComponent implements OnInit {
 
   obtenerLogoEspalda() {
     this.logoServices.obtenerLogo('Espalda').subscribe((e) => {
-      e.forEach((ee) => {
-        ee.url = 'https://tienda-mind-api.onrender.com' + ee.url;
-      });
       this.lstLogosEspalda = e;
     });
   }
 
   obtenerLogoHombro() {
     this.logoServices.obtenerLogo('Hombro').subscribe((e) => {
-      e.forEach((ee) => {
-        ee.url = 'https://tienda-mind-api.onrender.com' + ee.url;
-      });
       this.lstLogoBrazo = e;
     });
   }
@@ -144,6 +138,7 @@ export class TiendaComponent implements OnInit {
       this.lstLogoPecho = e;
     });
   }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   base64toFile2(base64String: string, filename: string): File | null {
     const base64 = base64String.split(';base64,').pop();
@@ -172,12 +167,13 @@ export class TiendaComponent implements OnInit {
   }
 
   obtenerUrlLogoTorzoId(id: string) {
-    this.logoServices.obtenerLogoId(id).subscribe((e) => {    
-    const filename = 'imagen.jpg'; // el nombre que deseas para el archivo
-    const file = this.base64toFile2(e.url, filename);
-    if (file) {
-      this.cargarImagenTorzo(file);
-    }
+    this.logoServices.obtenerLogoId(id).subscribe((e) => {
+        this.urllogosTorzoId = e._id;
+      const filename = 'imagen.jpg';
+      const file = this.base64toFile2(e.url, filename);
+      if (file) {
+        this.cargarImagenTorzo(file);
+      }
     });
   }
 
@@ -204,73 +200,79 @@ export class TiendaComponent implements OnInit {
     });
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
-
   obtenerUrlLogoEspaldId(id: string) {
     this.logoServices.obtenerLogoId(id).subscribe((e) => {
-      this.urllogosEspaldaId = e.url;
-      this.cargarImagenEspalda(this.urllogosEspaldaId);
-    });
-  }
-
-  obtenerUrlLogoHombroId(id: string) {
-    this.logoServices.obtenerLogoId(id).subscribe((e) => {
-      this.urllogosBrazoId = e.url;
-      this.cargarImagenHombro(this.urllogosBrazoId);
-    });
-  }
-
-  cargarImagenHombro(imagen: any) {
-    // Eliminar todas las mallas existentes
-    this.sceneHombro.children.forEach((child) => {
-      if (child instanceof THREE.Mesh) {
-        this.sceneHombro.remove(child);
+      this.urllogosEspaldaId = e._id;
+      const filename = 'imagen.jpg';
+      const file = this.base64toFile2(e.url, filename);
+      if (file) {
+        this.cargarImagenEspalda(file);
       }
     });
-
-    const logoTextureHombro = new THREE.TextureLoader().load(imagen);
-    const logoMaterialHombro = new THREE.MeshBasicMaterial({
-      map: logoTextureHombro,
-      transparent: true,
-    });
-
-    const logoGeometryHombro = new THREE.PlaneGeometry(5, 4); // Tamaño del plano (ancho, alto)
-    const logoMeshHombro = new THREE.Mesh(
-      logoGeometryHombro,
-      logoMaterialHombro
-    );
-
-    logoMeshHombro.position.set(-17, 12.8, -3.5); // Ajusta la posición según tus necesidades (arriva o abajo, fondo(+sube o -baja), izquierda o derecha)
-    logoMeshHombro.rotation.set(Math.PI / 2, 10, 7.9); // Rotación según necesidades (en este caso, gira 90 grados alrededor del eje x)
-
-    this.sceneHombro.add(logoMeshHombro);
-    this.scenePrincipal.children.push(this.sceneHombro);
   }
 
-  cargarImagenEspalda(imagen: any) {
+  cargarImagenEspalda(file: File) {
     // Eliminar todas las mallas existentes
     this.sceneEspalda.children.forEach((child) => {
       if (child instanceof THREE.Mesh) {
         this.sceneEspalda.remove(child);
       }
     });
-    // Cargar la nueva imagen
-    const logoTextureEspalda = new THREE.TextureLoader().load(imagen);
-    const logoMaterialEspalda = new THREE.MeshBasicMaterial({
-      map: logoTextureEspalda,
-      transparent: true,
+    const imgUrl = URL.createObjectURL(file);
+
+    const logoTextureEspalda = new THREE.TextureLoader();
+    logoTextureEspalda.load(imgUrl, (texture) => {
+      const logoMaterialEspalda = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+      });
+      const geometry = new THREE.PlaneGeometry(10, 10);
+      const mesh = new THREE.Mesh(geometry, logoMaterialEspalda);
+      mesh.rotation.set(Math.PI, 0, 9.4);
+      mesh.position.set(0, 10, -8.5);
+      this.sceneEspalda.add(mesh);
+      this.scenePrincipal.add(this.sceneEspalda);
+      URL.revokeObjectURL(imgUrl);
     });
-    const logoGeometryEspalda = new THREE.PlaneGeometry(10, 10); // Tamaño del plano (ancho, alto)
-    const logoMeshEspalda = new THREE.Mesh(
-      logoGeometryEspalda,
-      logoMaterialEspalda
-    );
-    logoMeshEspalda.rotation.set(Math.PI, 0, 9.4);
-    logoMeshEspalda.position.set(0, 10, -8.5); // Ajusta la posición según tus necesidades (izquierda o derecha, arriba o abajo, fondo)
-    this.sceneEspalda.add(logoMeshEspalda);
-    this.scenePrincipal.children.push(this.sceneEspalda);
   }
+
+  obtenerUrlLogoHombroId(id: string) {
+    this.logoServices.obtenerLogoId(id).subscribe((e) => {
+      this.urllogosBrazoId = e._id;
+      const filename = 'imagen.jpg';
+      const file = this.base64toFile2(e.url, filename);
+      if (file) {
+        this.cargarImagenHombro(file);
+      }
+    });
+  }
+
+  cargarImagenHombro(file: File) {
+    this.sceneHombro.children.forEach((child) => {
+      if (child instanceof THREE.Mesh) {
+        this.sceneHombro.remove(child);
+      }
+    });
+    const imgUrl = URL.createObjectURL(file);
+    const logoTextureHombro = new THREE.TextureLoader();
+    logoTextureHombro.load(imgUrl, (texture) => {
+      const logoMaterialHombro = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+      });
+      const geometry = new THREE.PlaneGeometry(5, 4);
+      const mesh = new THREE.Mesh(geometry, logoMaterialHombro);
+      mesh.position.set(-17, 12.8, -3.5);;
+      mesh.rotation.set(Math.PI / 2, 10, 7.9);
+      this.sceneHombro.add(mesh);
+      this.scenePrincipal.add(this.sceneHombro);
+      URL.revokeObjectURL(imgUrl);
+    });
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  
 
   cargarImgen3d(loader: GLTFLoader) {
     loader.load(
@@ -389,10 +391,13 @@ export class TiendaComponent implements OnInit {
       this.formGuardarProductos.get('existencias')?.value
     );
     formData.append('precio', this.formGuardarProductos.get('precio')?.value);
+
+    formData.append('categorias', this.selectCategoria);
+
+
     formData.append('torzoUrl', this.urllogosTorzoId);
     formData.append('hombroUrl', this.urllogosBrazoId);
     formData.append('espaldaUrl', this.urllogosEspaldaId);
-    formData.append('categorias', this.selectCategoria);
     this.productosServices.guardarProducto(formData).subscribe({
       next: (r) => {},
       error: (e) => {
@@ -418,9 +423,9 @@ export class TiendaComponent implements OnInit {
       const id = params.get('id');
       this.productosServices.obtenerProductoById(id!).subscribe({
         next: (r) => {
-          this.cargarImagenTorzo(r.torzoUrl);
-          this.cargarImagenHombro(r.hombroUrl);
-          this.cargarImagenEspalda(r.espaldaUrl);
+          this.obtenerUrlLogoTorzoId(r.torzoUrl);
+          this.obtenerUrlLogoHombroId(r.hombroUrl);
+          this.obtenerUrlLogoEspaldId(r.espaldaUrl);
           if (this.shirtMesh) {
             if (this.shirtMesh.material instanceof THREE.MeshStandardMaterial) {
               if (this.shirtScene) {
