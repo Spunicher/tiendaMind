@@ -1,1 +1,2 @@
-/uploads/*    https://tienda-mind-api.onrender.com/:splat   200!    Cache-Control: no-cache
+/*  /index.html   200
+/uploads/*   https://main--eclectic-figolla-73158f.netlify.app/:splat   200!    Cache-Control: no-cache
