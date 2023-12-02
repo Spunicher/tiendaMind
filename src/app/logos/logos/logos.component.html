@@ -36,14 +36,12 @@
         <tr>
           <th scope="col">Imagen</th>
           <th scope="col">Tipo</th>
-          <th scope="col">Url</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let logo of logos" class="text-center">
           <td><img style="width: 100px; height: 100px;" src="{{logo.url}}" /></td>
           <td>{{logo.tipo}}</td>
-          <td>{{logo.url}}</td>
         </tr>
       </tbody>
     </table>

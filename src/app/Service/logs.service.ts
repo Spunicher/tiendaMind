@@ -10,7 +10,7 @@ export class LogsService {
   private url = environment.url;
   constructor(private HttpClient: HttpClient) {}
 
-  guardarLogo(logo: FormData): Observable<any> {
+  guardarLogo(logo: any): Observable<any> {
     return this.HttpClient.post(`${this.url}/logos`, logo);
   }
 

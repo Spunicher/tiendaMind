@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 export class LogosComponent implements OnInit {
   logos: any[] = [];
   logoForm: FormGroup;
-  archivo:File = new File([], '');
+  archivo:any;
 
   constructor(
     private _builder: FormBuilder,
@@ -30,10 +30,7 @@ export class LogosComponent implements OnInit {
 
   MostrarLogos(){
     this.logoService.obtenerLogos().subscribe({
-      next: (r) => {  
-        r.forEach(ee=>{
-          ee.url = "https://tienda-mind-api.onrender.com"+ee.url
-        })     
+      next: (r) => {      
         this.logos = r;
       },
       error: (e) => {console.log(e)},
@@ -42,15 +39,28 @@ export class LogosComponent implements OnInit {
   }
 
   obtenerImagen(event: any){
-   this.archivo = event.target.files[0];
+    const file = event.target.files[0];
+
+    if (file) {
+      this.convertirABase64(file);
+    }
   }
   
-  guardarLogos(){
-    const formData = new FormData();
-    formData.append('url', this.archivo);
-    formData.append('tipo', this.logoForm.get('tipo')?.value);
+  convertirABase64(file: File) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      this.archivo = base64String;
+    };
+    reader.readAsDataURL(file);
+  }
 
-    this.logoService.guardarLogo(formData).subscribe({
+  guardarLogos(){
+   const logo = {
+    url:this.archivo,
+    tipo:this.logoForm.get('tipo')?.value
+    }
+    this.logoService.guardarLogo(logo).subscribe({
       next: (r) => {},
       error: (e) => {
         Swal.fire({

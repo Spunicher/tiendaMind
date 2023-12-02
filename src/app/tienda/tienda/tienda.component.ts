@@ -9,6 +9,7 @@ import { CategoriasService } from 'src/app/Service/categorias.service';
 import html2canvas from 'html2canvas';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-tienda',
@@ -20,8 +21,8 @@ export class TiendaComponent implements OnInit {
   urlpecho: String = '';
   lstMostrarCategorias: any;
   selectCategoria: any;
-  archivo:File = new File([], '');
-  idActivo:boolean = true;
+  archivo: File = new File([], '');
+  idActivo: boolean = true;
 
   constructor(
     private fb: FormBuilder,
@@ -29,7 +30,8 @@ export class TiendaComponent implements OnInit {
     private logoServices: LogsService,
     private categoriasServices: CategoriasService,
     private route: ActivatedRoute,
-    private routeService:Router
+    private routeService: Router,
+    private sanitizer: DomSanitizer
   ) {
     this.formGuardarProductos = this.fb.group({
       nombre: ['', Validators.required],
@@ -81,19 +83,14 @@ export class TiendaComponent implements OnInit {
         if (this.shirtScene) {
           if (this.color == 'rgb(255, 255, 255)') {
             this.shirtScene.background = new THREE.Color('white');
-
           } else if (this.color == 'rgb(239, 189, 78)') {
             this.shirtScene.background = new THREE.Color('rgb(239, 189, 78)');
-
           } else if (this.color == 'rgb(128, 198, 112)') {
             this.shirtScene.background = new THREE.Color('rgb(128, 198, 112)');
-
           } else if (this.color == 'rgb(114, 109, 232)') {
             this.shirtScene.background = new THREE.Color('rgb(114, 109, 232)');
-
           } else if (this.color == 'rgb(239, 103, 78)') {
             this.shirtScene.background = new THREE.Color('rgb(239, 103, 78)');
-
           } else if (this.color == 'rgb(53, 57, 52)') {
             this.shirtScene.background = new THREE.Color('rgb(163, 163, 163)');
           }
@@ -111,12 +108,12 @@ export class TiendaComponent implements OnInit {
   obtenerCategorias() {
     this.categoriasServices.obtenerProducto().subscribe({
       next: (r) => {
-        const lista: any[] = []
-        r.forEach(e=>{
-          if(e.nombre === 'CAMISAS 3D'){
-            lista.push(e)
+        const lista: any[] = [];
+        r.forEach((e) => {
+          if (e.nombre === 'CAMISAS 3D') {
+            lista.push(e);
           }
-        })
+        });
         this.lstMostrarCategorias = lista;
       },
       error: (e) => {},
@@ -126,37 +123,89 @@ export class TiendaComponent implements OnInit {
 
   obtenerLogoEspalda() {
     this.logoServices.obtenerLogo('Espalda').subscribe((e) => {
-      e.forEach(ee=>{
-        ee.url = "https://tienda-mind-api.onrender.com"+ee.url
-      }) 
+      e.forEach((ee) => {
+        ee.url = 'https://tienda-mind-api.onrender.com' + ee.url;
+      });
       this.lstLogosEspalda = e;
     });
   }
 
   obtenerLogoHombro() {
     this.logoServices.obtenerLogo('Hombro').subscribe((e) => {
-      e.forEach(ee=>{
-        ee.url = "https://tienda-mind-api.onrender.com"+ee.url
-      }) 
+      e.forEach((ee) => {
+        ee.url = 'https://tienda-mind-api.onrender.com' + ee.url;
+      });
       this.lstLogoBrazo = e;
     });
   }
 
   obtenerLogoTorzo() {
     this.logoServices.obtenerLogo('Torzo').subscribe((e) => {
-      e.forEach(ee=>{
-        ee.url = "https://tienda-mind-api.onrender.com"+ee.url
-      }) 
       this.lstLogoPecho = e;
     });
   }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  base64toFile2(base64String: string, filename: string): File | null {
+    const base64 = base64String.split(';base64,').pop();
+
+    if (!base64) {
+      console.error('Formato Base64 incorrecto');
+      return null;
+    }
+
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+
+    try {
+      return new File([blob], filename, { type: blob.type });
+    } catch (e) {
+      console.error('Error al crear el objeto File:', e);
+      return null;
+    }
+  }
 
   obtenerUrlLogoTorzoId(id: string) {
-    this.logoServices.obtenerLogoId(id).subscribe((e) => {  
-      this.urllogosTorzoId = e.url;
-      this.cargarImagenTorzo(this.urllogosTorzoId);
+    this.logoServices.obtenerLogoId(id).subscribe((e) => {    
+    const filename = 'imagen.jpg'; // el nombre que deseas para el archivo
+    const file = this.base64toFile2(e.url, filename);
+    if (file) {
+      this.cargarImagenTorzo(file);
+    }
     });
   }
+
+  cargarImagenTorzo(file: File) {
+    this.sceneTorzo.children.forEach((child) => {
+      if (child instanceof THREE.Sprite) {
+        this.sceneTorzo.remove(child);
+      }
+    });
+    const imgUrl = URL.createObjectURL(file);
+    const loader = new THREE.TextureLoader();
+    loader.load(imgUrl, (texture) => {
+      // Crear el material
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+      });
+      const geometry = new THREE.PlaneGeometry(11, 8);
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(0, 7.4, 7.372);
+      this.sceneTorzo.add(mesh);
+      this.scenePrincipal.add(this.sceneTorzo);
+      URL.revokeObjectURL(imgUrl);
+    });
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
 
   obtenerUrlLogoEspaldId(id: string) {
     this.logoServices.obtenerLogoId(id).subscribe((e) => {
@@ -170,27 +219,6 @@ export class TiendaComponent implements OnInit {
       this.urllogosBrazoId = e.url;
       this.cargarImagenHombro(this.urllogosBrazoId);
     });
-  }
-
-  cargarImagenTorzo(imagen: any) {
-    this.sceneTorzo.children.forEach((child) => {
-      if (child instanceof THREE.Sprite) {
-        this.sceneTorzo.remove(child);
-      }
-    });
-  
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load(imagen);
-  
-    const material = new THREE.SpriteMaterial({ map: texture });
-    const sprite = new THREE.Sprite(material);
-  
-    // Posición y escala del sprite
-    sprite.position.set(0, 7.4, 7.372);
-    sprite.scale.set(11, 8, 1);
-  
-    this.sceneTorzo.add(sprite);
-    this.scenePrincipal.children.push(this.sceneTorzo);
   }
 
   cargarImagenHombro(imagen: any) {
@@ -290,7 +318,7 @@ export class TiendaComponent implements OnInit {
     ); // Color blanco, intensidad 0.5
     this.scenePrincipal.add(ambientLight);
     const loader = new GLTFLoader();
-    
+
     this.cargarImgen3d(loader);
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
@@ -299,9 +327,9 @@ export class TiendaComponent implements OnInit {
 
     const gradient = context!.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, 'rgb(200, 200, 255)'); // Color intermedio (azul claro)
-    gradient.addColorStop(0.5, 'rgb(200, 200, 255)');  
-    gradient.addColorStop(0.7, 'rgb(244, 244, 244)');         // Color intermedio
-    gradient.addColorStop(1, 'rgb(255, 255, 255)'); 
+    gradient.addColorStop(0.5, 'rgb(200, 200, 255)');
+    gradient.addColorStop(0.7, 'rgb(244, 244, 244)'); // Color intermedio
+    gradient.addColorStop(1, 'rgb(255, 255, 255)');
 
     context!.fillStyle = gradient;
     context!.fillRect(0, 0, canvas.width, canvas.height);
@@ -340,6 +368,7 @@ export class TiendaComponent implements OnInit {
     const screenshotURL = canvas.toDataURL();
     const fileName = 'camisa3D.png';
     const mimeType = 'image/png';
+    console.log(screenshotURL);
     this.archivo = this.base64toFile(screenshotURL, fileName, mimeType);
   }
 
@@ -348,44 +377,50 @@ export class TiendaComponent implements OnInit {
     const formData = new FormData();
     formData.append('nombre', this.formGuardarProductos.get('nombre')?.value);
     formData.append('color', this.color);
-    formData.append('descripcion', this.formGuardarProductos.get('descripcion')?.value);
+    formData.append(
+      'descripcion',
+      this.formGuardarProductos.get('descripcion')?.value
+    );
     formData.append('url', this.archivo);
     formData.append('talla', this.formGuardarProductos.get('talla')?.value);
-    formData.append('tela', this.formGuardarProductos.get('tela')?.value,);
-    formData.append('existencias', this.formGuardarProductos.get('existencias')?.value);
+    formData.append('tela', this.formGuardarProductos.get('tela')?.value);
+    formData.append(
+      'existencias',
+      this.formGuardarProductos.get('existencias')?.value
+    );
     formData.append('precio', this.formGuardarProductos.get('precio')?.value);
     formData.append('torzoUrl', this.urllogosTorzoId);
     formData.append('hombroUrl', this.urllogosBrazoId);
     formData.append('espaldaUrl', this.urllogosEspaldaId);
-    formData.append('categorias',  this.selectCategoria);
+    formData.append('categorias', this.selectCategoria);
     this.productosServices.guardarProducto(formData).subscribe({
-      next: (r) => { },
+      next: (r) => {},
       error: (e) => {
         Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Ocurrio un erro al guardar el producto!"
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrio un erro al guardar el producto!',
         });
       },
       complete: () => {
         Swal.fire({
-          icon: "success",
-          title: "Guardado",
-          text: "El producto se guardo de manera correcta!"
+          icon: 'success',
+          title: 'Guardado',
+          text: 'El producto se guardo de manera correcta!',
         });
-         this.routeService.navigate(['/Menu'])
+        this.routeService.navigate(['/Menu']);
       },
     });
   }
 
-  mostrarCamisa3dPorId(){
-    this.route.paramMap.subscribe(params => {
+  mostrarCamisa3dPorId() {
+    this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
       this.productosServices.obtenerProductoById(id!).subscribe({
-        next: (r) => {    
-          this.cargarImagenTorzo(r.torzoUrl)
-          this.cargarImagenHombro(r.hombroUrl)
-          this.cargarImagenEspalda(r.espaldaUrl)
+        next: (r) => {
+          this.cargarImagenTorzo(r.torzoUrl);
+          this.cargarImagenHombro(r.hombroUrl);
+          this.cargarImagenEspalda(r.espaldaUrl);
           if (this.shirtMesh) {
             if (this.shirtMesh.material instanceof THREE.MeshStandardMaterial) {
               if (this.shirtScene) {
@@ -396,64 +431,60 @@ export class TiendaComponent implements OnInit {
 
           this.formGuardarProductos.patchValue({
             nombre: r.nombre,
-            categoria:r.categorias._id,
-            tela:r.tela,
-            talla:r.talla,
-            descripcion:r.descripcion,
-            existencias:r.existencias,
-            precio:r.precio
-          })
-          this.idActivo = false
+            categoria: r.categorias._id,
+            tela: r.tela,
+            talla: r.talla,
+            descripcion: r.descripcion,
+            existencias: r.existencias,
+            precio: r.precio,
+          });
+          this.idActivo = false;
         },
         error: (e) => {
-          console.log(e)
+          console.log(e);
         },
         complete: () => {},
       });
-  })
+    });
   }
 
-  eliminarProducto(){
+  eliminarProducto() {
     Swal.fire({
-      title: "¿Desea eliminar este producto?",
+      title: '¿Desea eliminar este producto?',
       showDenyButton: true,
-      confirmButtonText: "Si",
-      denyButtonText: `No`
+      confirmButtonText: 'Si',
+      denyButtonText: `No`,
     }).then((result) => {
       if (result.isConfirmed) {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      this.productosServices.eliminarProductoById(id!).subscribe({
-        next: (r) => {},
-        error: (e) => {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Ocurrio un erro al guardar el logo!"
+        this.route.paramMap.subscribe((params) => {
+          const id = params.get('id');
+          this.productosServices.eliminarProductoById(id!).subscribe({
+            next: (r) => {},
+            error: (e) => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrio un erro al guardar el logo!',
+              });
+            },
+            complete: () => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                text: 'El producto se ha eliminado satisfactoriamente!',
+              });
+              this.routeService.navigate(['/Menu']);
+            },
           });
-        },
-        complete: () => {
-          Swal.fire({
-            icon: "success",
-            title: "Eliminado",
-            text: "El producto se ha eliminado satisfactoriamente!"
-          });
-          this.routeService.navigate(['/Menu'])
-        },
-      });
-  })
-
+        });
       } else if (result.isDenied) {
         Swal.fire({
-          icon: "info",
-          title: "Operacion cancelada",
-          text: "El usuario cancelo la eliminacion del producto"
+          icon: 'info',
+          title: 'Operacion cancelada',
+          text: 'El usuario cancelo la eliminacion del producto',
         });
       }
     });
-
-
-    
   }
 
   ngOnInit() {
