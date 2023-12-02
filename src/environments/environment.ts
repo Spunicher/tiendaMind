@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
+  production: true,
   url: 'https://tienda-mind-api.onrender.com/api'
 };
