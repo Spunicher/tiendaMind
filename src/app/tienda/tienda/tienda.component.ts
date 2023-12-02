@@ -153,7 +153,7 @@ export class TiendaComponent implements OnInit {
 
   obtenerUrlLogoTorzoId(id: string) {
     this.logoServices.obtenerLogoId(id).subscribe((e) => {  
-      this.urllogosTorzoId = e.url;
+      this.urllogosTorzoId = "https://main--eclectic-figolla-73158f.netlify.app/uploads/"+e.url;
       this.cargarImagenTorzo(this.urllogosTorzoId);
     });
   }
