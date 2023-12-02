@@ -27,7 +27,6 @@ export class MenuComponent implements OnInit {
 
   cargarProductos(){
     this.productoService.mostrarProductos().subscribe( data => {
-      console.log(data)
       data.forEach(e=>{
         e.imagen = "https://tienda-mind-api.onrender.com"+e.imagen
       })
@@ -37,6 +36,9 @@ export class MenuComponent implements OnInit {
   
   cargarProductosByCategoria(){
     this.productoService.mostrarProductosByCategoria(this.selectCategoria).subscribe( data => {
+      data.forEach(e=>{
+        e.imagen = "https://tienda-mind-api.onrender.com"+e.imagen
+      })
       this.productos = data;
     });
   }
