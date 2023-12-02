@@ -153,7 +153,7 @@ export class TiendaComponent implements OnInit {
 
   obtenerUrlLogoTorzoId(id: string) {
     this.logoServices.obtenerLogoId(id).subscribe((e) => {  
-      this.urllogosTorzoId = "https://dealgoritmos.com/wp-content/uploads/2023/05/6d8841b6-9d24-457a-95c5-0d3de1d7bf5f.png";
+      this.urllogosTorzoId = e.url;
       this.cargarImagenTorzo(this.urllogosTorzoId);
     });
   }
@@ -174,22 +174,22 @@ export class TiendaComponent implements OnInit {
 
   cargarImagenTorzo(imagen: any) {
     this.sceneTorzo.children.forEach((child) => {
-      if (child instanceof THREE.Mesh) {
+      if (child instanceof THREE.Sprite) {
         this.sceneTorzo.remove(child);
       }
     });
-    let src = imagen;
-    const loader1 = new THREE.TextureLoader();
-    let texture = loader1.load(src);
-    console.log(texture)
-    const logoPechos = new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-    });
-    const logoGeometry = new THREE.PlaneGeometry(11, 8); // Tamaño del plano (ancho, alto)
-    const logoMesh = new THREE.Mesh(logoGeometry, logoPechos);
-    logoMesh.position.set(0, 7.4, 7.372);
-    this.sceneTorzo.add(logoMesh);
+  
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load(imagen);
+  
+    const material = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(material);
+  
+    // Posición y escala del sprite
+    sprite.position.set(0, 7.4, 7.372);
+    sprite.scale.set(11, 8, 1);
+  
+    this.sceneTorzo.add(sprite);
     this.scenePrincipal.children.push(this.sceneTorzo);
   }
 
