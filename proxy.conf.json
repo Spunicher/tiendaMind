@@ -1,6 +1,6 @@
 {
   "/uploads/*": {
-    "target": "https://main--eclectic-figolla-73158f.netlify.app",
+    "target": "https://tienda-mind-api.onrender.com",
     "secure": false,
     "changeOrigin":true
   }
