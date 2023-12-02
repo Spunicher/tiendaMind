@@ -138,7 +138,10 @@ export class TiendaComponent implements OnInit {
 
   obtenerLogoTorzo() {
     this.logoServices.obtenerLogo('Torzo').subscribe((e) => {
-   
+      console.log(e)
+      e.forEach(ee=>{
+        ee.url = "https://tienda-mind-api.onrender.com"+ee.url
+      }) 
       this.lstLogoPecho = e;
     });
   }
