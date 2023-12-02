@@ -1,5 +1,5 @@
 {
-  "/uploads/*": {
+  "/logos/*": {
     "target": "https://tienda-mind-api.onrender.com",
     "secure": false,
     "changeOrigin":true
