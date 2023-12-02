@@ -3,6 +3,12 @@
     "target": "https://tienda-mind-api.onrender.com",
     "secure": false,
     "changeOrigin":true
+  },
+
+  "/uploads/*": {
+    "target": "https://main--eclectic-figolla-73158f.netlify.app",
+    "secure": false,
+    "changeOrigin":true
   }
 }
 
