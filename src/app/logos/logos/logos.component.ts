@@ -30,7 +30,10 @@ export class LogosComponent implements OnInit {
 
   MostrarLogos(){
     this.logoService.obtenerLogos().subscribe({
-      next: (r) => {        
+      next: (r) => {  
+        r.forEach(ee=>{
+          ee.url = "https://tienda-mind-api.onrender.com"+ee.url
+        })     
         this.logos = r;
       },
       error: (e) => {console.log(e)},
