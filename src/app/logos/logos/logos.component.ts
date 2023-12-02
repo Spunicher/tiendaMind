@@ -56,11 +56,11 @@ export class LogosComponent implements OnInit {
   }
 
   guardarLogos(){
-   const logo = {
-    url:this.archivo,
-    tipo:this.logoForm.get('tipo')?.value
-    }
-    this.logoService.guardarLogo(logo).subscribe({
+    const formData = new FormData();
+  formData.append('file', this.archivo);
+  formData.append('tipo', this.logoForm.get('tipo')?.value);
+  
+    this.logoService.guardarLogo(formData).subscribe({
       next: (r) => {},
       error: (e) => {
         Swal.fire({
